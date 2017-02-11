@@ -12,7 +12,7 @@ white=(255,255,255);
 red=(255,0,0);
 grey=(125,125,125);
 green=(0,255,0);
-
+maxscore=0;
 
 gameDisplay=pg.display.set_mode((d_width,d_height));
 pg.display.set_caption('PotHoles');
@@ -24,6 +24,10 @@ def dodged_block(count):
     font =pg.font.SysFont(None,25);
     text=font.render("Dodged : " + str(count),True,black);
     gameDisplay.blit(text,(0,0));
+def high_score(high):
+    font =pg.font.SysFont(None,25);
+    text=font.render("High Score : " + str(high),True,black);
+    gameDisplay.blit(text,(d_width-sidewalk_width+10,0));
 def car(x,y):
     gameDisplay.blit(carImg,(x,y));
 
@@ -57,8 +61,10 @@ def strip(ty,color):
             
         thing(sx,sy,30,200,color)
 def game_loop():
+    global maxscore;
     space=0;
     #car
+    c_speed=6;
     paused=False;
     x=d_width*0.45;
     y=d_height*0.8;
@@ -86,9 +92,9 @@ def game_loop():
                 print('here');
             if event.type==pg.KEYDOWN:
                 if event.key==pg.K_LEFT:
-                    xc=-5
+                    xc=0-c_speed;
                 if event.key==pg.K_RIGHT:
-                    xc=5
+                    xc=c_speed;
                 if event.key==pg.K_p:
                     paused=True;
                 if event.key==pg.K_q:
@@ -105,6 +111,7 @@ def game_loop():
         strip(stpy,white);
         car(x,y)
         dodged_block(dodged);
+        high_score(maxscore);
         stpy+=ts;
         
         for b in block:
@@ -122,6 +129,8 @@ def game_loop():
                 if dodged%5==0:
                     tcount+=1;
                 space=0;
+                if maxscore<dodged:
+                    maxscore=dodged;
             b[1]+=ts;
         if space==50 and len(block)<tcount  :
             tx=random.randrange(sidewalk_width,d_width-sidewalk_width);
